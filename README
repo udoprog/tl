@@ -1,0 +1,9 @@
+To install the script:
+
+> python setup.py install
+
+Then run:
+
+> tl 100GB 10MiB/s
+
+It will tell you the time it will take to fill 100GB with a flow of 10MiB/s
