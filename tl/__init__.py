@@ -34,10 +34,12 @@ units = [
   )),
   Family('volume', (
     Unit('ml', "millilitre", 1e-3),
+    Unit('cl', "centilitre", 1e-2),
+    Unit('dl', "decilitre", 1e-1),
     Unit('l', "litre", 1),
   )),
   Family('time', (
-    Unit('ms', "second", 1e-3),
+    Unit('ms', "millisecond", 1e-3),
     Unit('s', "second", 1),
     Unit('m', "minute", 60),
     Unit('H', "minute", 60 * 60),
@@ -175,7 +177,23 @@ def prettyprint_time(seconds):
 bucket_m = re.compile("^([0-9]+(\.[0-9]+)?)([a-zA-Z]+)$");
 time_m = re.compile("^(.*)/([a-zA-Z]+)$");
 
+def main_command(command):
+  if command == "list":
+    print "===List of all units==="
+    for family in units:
+      print ""
+      print family.type
+      
+      for unit in family.units:
+        if unit.size == 1:
+          print "%-3s %-20s %s (Base unit)"%(unit.suffix, unit.long, str(unit.size));
+        else:
+          print "%-3s %-20s %s"%(unit.suffix, unit.long, str(unit.size));
+
 def main(argv):
+  if len(argv) == 1:
+    return main_command(argv[0]);
+
   if len(argv) < 2:
     return 1;
   
