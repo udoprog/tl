@@ -57,7 +57,8 @@ units = [
     Unit('m', "minute", 60),
     Unit('H', "hour", 60 * 60),
     Unit('d', "day", 60 * 60 * 24),
-    Unit('w', "minute", 60 * 60 * 24 * 7)
+    Unit('w', "week", 60 * 60 * 24 * 7),
+    Unit('y', "year", 60 * 60 * 24 * 365),
   ))
 ];
 
@@ -189,6 +190,30 @@ def prettyprint_time(seconds):
   
   print ", ".join(timeparts);
 
+def rel_dist(a_unit, a_amount, b_unit, b_amount, time_u):
+    import math
+
+    L = a_unit.size * a_amount
+    v = b_unit.size * b_amount / time_u.size
+    c = 299792458.0
+
+    if (v == c):
+      return Unit(a_unit.suffix, a_unit.long, 0.0)
+      
+    if (v > c):
+      print 'Speed more than the speed of light, cannot use relativistic math.'
+      print
+      return a_unit
+
+    Lp = L*math.sqrt(1 - v**2/c**2)
+
+    if (v > 0.1*c):
+      print 'Speed is %.2f%% the speed of light.' % round(float(v)/float(c)*100, 2)
+      print 'Distance gets shortened by %.2f%%.' % round(100-float(Lp)/float(L)*100, 2)
+      print
+    
+    return Unit(a_unit.suffix, a_unit.long, Lp / a_amount)
+
 bucket_m = re.compile("^([0-9]+(\.[0-9]+)?(e[1-9][0-9]*)?)([a-zA-Z]+)$");
 time_m = re.compile("^(.*)/([a-zA-Z]+)$");
 
@@ -245,8 +270,11 @@ def main(argv):
   if not time_f:
     print "Could not find time unit:", delta_right;
     return 1;
+
+  if a_fam.type == 'distance':
+    a_unit = rel_dist(a_unit, a_amount, b_unit, b_amount, time_u)
   
-  prettyprint_time(int((a_unit.size * a_amount * time_u.size) / (b_unit.size * b_amount)));
+  prettyprint_time(int(round((a_unit.size * a_amount * time_u.size) / (b_unit.size * b_amount))));
   return 0;
 
 def entrypoint():
