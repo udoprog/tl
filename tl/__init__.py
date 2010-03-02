@@ -38,6 +38,7 @@ units = [
     Unit('dm', "metre", 1e-1),
     Unit('m', "metre", 1), 
     Unit('km', "kilometre", 1e3),
+    Unit('ly', "lightyear", 9.4605284e15),
   )),
   Family('weight', (
     Unit('g', "gram", 1),
@@ -66,7 +67,7 @@ def match_unit(arg):
   if not bucket:
     return None, None, None;
   
-  amount, _, suffix = bucket.groups();
+  amount, _, _, suffix = bucket.groups();
   
   if amount:
     amount = float(amount);
@@ -188,7 +189,7 @@ def prettyprint_time(seconds):
   
   print ", ".join(timeparts);
 
-bucket_m = re.compile("^([0-9]+(\.[0-9]+)?)([a-zA-Z]+)$");
+bucket_m = re.compile("^([0-9]+(\.[0-9]+)?(e[1-9][0-9]*)?)([a-zA-Z]+)$");
 time_m = re.compile("^(.*)/([a-zA-Z]+)$");
 
 def main_command(command):
